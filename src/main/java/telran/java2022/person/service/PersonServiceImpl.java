@@ -7,7 +7,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import net.bytebuddy.asm.Advice.Return;
 import telran.java2022.person.dao.PersonRepository;
 import telran.java2022.person.dto.AddressDto;
 import telran.java2022.person.dto.CityPopulationDto;
@@ -58,31 +57,28 @@ public class PersonServiceImpl implements PersonService {
 
 	@Override
 	public Iterable<PersonDto> findPersonsByName(String name) {
-		return personRepository.findByNameIgnoreCase(name).map(p -> modelMapper.map(p, PersonDto.class))
+		return personRepository.findAllByName(name).map(p -> modelMapper.map(p, PersonDto.class))
 				.collect(Collectors.toList());
-//		return null;
 	}
 
 	@Override
 	public Iterable<PersonDto> findPersonsBetweenAges(Integer minAge, Integer maxAge) {
-//		LocalDate from = LocalDate.now().minusYears(maxAge);
-//		LocalDate to = LocalDate.now().minusYears(minAge);
-//		return personRepository.findByBirthDateBetween(to, from).map(p -> modelMapper.map(p, PersonDto.class))
-//				.collect(Collectors.toList());
-		return null;
+		LocalDate from = LocalDate.now().minusYears(maxAge);
+		LocalDate to = LocalDate.now().minusYears(minAge);
+		return personRepository.findAllByBirthDateBetween(from, to).map(p -> modelMapper.map(p, PersonDto.class))
+				.collect(Collectors.toList());
 	}
 
 	@Override
 	public Iterable<PersonDto> findPersonsByCity(String city) {
-//		return personRepository.findByCityIgnoreCase(city).map(p -> modelMapper.map(p, PersonDto.class))
-//				.collect(Collectors.toList());
-		return null;
+		return personRepository.findAllByAddressCity(city).map(p -> modelMapper.map(p, PersonDto.class))
+				.collect(Collectors.toList());
 	}
 
 	@Override
 	public Iterable<CityPopulationDto> getCitiesPopulation() {
-		// TODO Auto-generated method stub
-		return null;
+		return personRepository.getCitiesPopulation().map(p -> modelMapper.map(p, CityPopulationDto.class))
+				.collect(Collectors.toList());
 	}
 
 }
