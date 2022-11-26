@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
+import telran.java2022.person.dto.CityPopulationDto;
 import telran.java2022.person.model.Person;
 
 public interface PersonRepository extends CrudRepository<Person, Integer> {
@@ -20,6 +21,7 @@ public interface PersonRepository extends CrudRepository<Person, Integer> {
 	Stream<Person> findAllByBirthDateBetween(LocalDate from, LocalDate to);
 
 //	@Query(value = "SELECT product.city, COUNT( product.id ) AS product[*].population FROM product.persons GROUP BY product.city", nativeQuery = true)
-	@Query(value = "SELECT city, COUNT( id ) AS population FROM persons GROUP BY city", nativeQuery = true)
-	Stream<Map<String, Long>> getCitiesPopulation();
+//	@Query(value = "SELECT city, COUNT( id ) AS population FROM persons GROUP BY city", nativeQuery = true)
+	@Query("select new telran.java2022.person.dto.CityPopulationDto(p.address.city, count(p)) from Person p group by p.address.city order by count(p) desc")
+	Stream<CityPopulationDto> getCitiesPopulation();
 }
