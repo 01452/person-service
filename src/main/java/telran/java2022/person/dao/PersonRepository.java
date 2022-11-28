@@ -1,27 +1,30 @@
 package telran.java2022.person.dao;
 
 import java.time.LocalDate;
-import java.util.Map;
 import java.util.stream.Stream;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 import telran.java2022.person.dto.CityPopulationDto;
+import telran.java2022.person.model.Child;
+import telran.java2022.person.model.Employee;
 import telran.java2022.person.model.Person;
 
 public interface PersonRepository extends CrudRepository<Person, Integer> {
 
-//	@Query(value ="select * from persons where product_table.name = 'Peter'",
-//			nativeQuery = true)
 	Stream<Person> findAllByName(String name);
 
 	Stream<Person> findAllByAddressCity(String city);
 
 	Stream<Person> findAllByBirthDateBetween(LocalDate from, LocalDate to);
 
-//	@Query(value = "SELECT product.city, COUNT( product.id ) AS product[*].population FROM product.persons GROUP BY product.city", nativeQuery = true)
-//	@Query(value = "SELECT city, COUNT( id ) AS population FROM persons GROUP BY city", nativeQuery = true)
 	@Query("select new telran.java2022.person.dto.CityPopulationDto(p.address.city, count(p)) from Person p group by p.address.city order by count(p) desc")
 	Stream<CityPopulationDto> getCitiesPopulation();
+
+	@Query(value ="SELECT * FROM EMPLOYEE e where e.salary>=? and e.salary<?", nativeQuery = true)
+	Stream<Employee> findEmployeeBySalary(int min, int max);
+	
+	@Query(value ="SELECT * FROM Child", nativeQuery = true)
+	Stream<Child> getChildren();
 }
